@@ -1,12 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
-public class Object_Damaging : MonoBehaviour
+public class SceneChanger : MonoBehaviour
 {
-
-
-
     // Start is called before the first frame update
     void Start()
     {
@@ -17,5 +15,10 @@ public class Object_Damaging : MonoBehaviour
     void Update()
     {
 
+    }
+
+    public void zStartGame()
+    {
+        SceneManager.LoadScene("BR 1");
     }
 }
