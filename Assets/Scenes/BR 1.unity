@@ -17160,6 +17160,9 @@ MonoBehaviour:
   - {fileID: 1737247937}
   player: {fileID: 1285878167}
   baby: {fileID: 2139973997}
+  sounds:
+  - {fileID: 0}
+  - {fileID: 0}
   MM: {fileID: 1410798357}
   MMB1: {fileID: 1729139837}
   MMB2: {fileID: 719043332}

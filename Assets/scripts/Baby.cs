@@ -13,6 +13,9 @@ public class Baby : MonoBehaviour
 
     public GameObject baby;
 
+    AudioSource audioSource;
+    public List<AudioClip> sounds = new List<AudioClip>();
+
     //main menu
     public GameObject MM;
     public GameObject MMB1; //already baby
@@ -258,10 +261,15 @@ public class Baby : MonoBehaviour
 
 
         //bug flies to preset location
+
+
         //bloody bite sound
         //straw sucking
+
         //baby drain anim
         //bug fly away??
+
+
         //open leaderboard
 
 
