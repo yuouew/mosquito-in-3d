@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Fan : MonoBehaviour
 {
+    public GameObject FanBlades;
 
     public GameObject origin;
 
@@ -16,7 +17,7 @@ public class Fan : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
+        FanBlades.transform.Rotate(0, 0, 1500f * Time.deltaTime);
     }
 
 

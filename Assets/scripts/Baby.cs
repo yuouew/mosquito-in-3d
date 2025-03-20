@@ -6,13 +6,17 @@ using TMPro;
 public class Baby : MonoBehaviour
 {
 
-    public List<Vector3> locations = new List<Vector3>();
+    public List<GameObject> locations = new List<GameObject>();
 
     public GameObject player;
     private KeyMovement kM;
 
+    public GameObject baby;
+
     //main menu
     public GameObject MM;
+    public GameObject MMB1; //already baby
+    public GameObject MMB2; //spawn baby
     public GameObject MMCam;
     public GameObject MMTitle;
 
@@ -43,12 +47,24 @@ public class Baby : MonoBehaviour
     //timer at top/bottom
     public TextMeshProUGUI smallText;
 
+    private bool applyForce;
+    private Vector3 savedPosition;
+    private Quaternion savedRotation;
+
+
 
     // Start is called before the first frame update
     void Start()
     {
-        player.SetActive(false);
-        player.GetComponent<KeyMovement>().Spawn();
+
+        savedPosition = baby.GetComponent<Rigidbody>().position;
+        savedRotation = baby.GetComponent<Rigidbody>().rotation;
+
+        //baby.GetComponent<Rigidbody>().AddForce(Vector3.back * 15f, ForceMode.Impulse);
+
+
+        //player.SetActive(false);
+        //player.GetComponent<KeyMovement>().Spawn();
 
 
 
@@ -62,7 +78,7 @@ public class Baby : MonoBehaviour
         kM.magnitube = 0f;
 
 
-        MMButton();
+        MMButton2();
 
         //turn on mm
         //turn on mm title
@@ -71,9 +87,16 @@ public class Baby : MonoBehaviour
 
     }
 
+
     // Update is called once per frame
     void Update()
     {
+        if (applyForce)
+        {
+            baby.GetComponent<Rigidbody>().AddForce(Vector3.back * 5f, ForceMode.Force);
+            baby.GetComponent<Rigidbody>().AddTorque(Vector3.left * 10f, ForceMode.Force);
+        }
+
         if (countingScore)
         {
             scoreTimer += Time.deltaTime;
@@ -93,17 +116,44 @@ public class Baby : MonoBehaviour
     {
         MMTitle.SetActive(true);
         MM.SetActive(false);
+
+        MMB1.SetActive(true);
+        MMB2.SetActive(false);
+
         LB.SetActive(true);
         LBEntry.SetActive(false);
     }
 
-    public void MMButton()
+    //baby already there
+    public void MMButton1()
     {
         MMTitle.SetActive(true);
         MM.SetActive(true);
+
+        MMB1.SetActive(false);
+        MMB2.SetActive(false);
+
+        LB.SetActive(false);
+        LBEntry.SetActive(false);
+    }
+
+    //baby respawn
+    public void MMButton2()
+    {
+        MMTitle.SetActive(true);
+        MM.SetActive(true);
+
+        MMB1.SetActive(false);
+        MMB2.SetActive(false);
+
         LB.SetActive(false);
         LBEntry.SetActive(false);
 
+
+        baby.GetComponent<Rigidbody>().velocity = Vector3.zero;
+        baby.GetComponent<Rigidbody>().angularVelocity = Vector3.zero;
+        baby.GetComponent<Rigidbody>().position = savedPosition;
+        baby.GetComponent<Rigidbody>().rotation = savedRotation;
     }
 
     private IEnumerator ReadyUp()
@@ -155,7 +205,7 @@ public class Baby : MonoBehaviour
 
 
     //end game on contact with player
-    private void OnCollisionEnter(Collision other)
+    private void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.CompareTag("Player"))
         {
@@ -181,15 +231,22 @@ public class Baby : MonoBehaviour
     IEnumerator Drain()
     {
 
-        yield return StartCoroutine(player.GetComponent<KeyMovement>().FlyOver(locations[1], 1f));
+        yield return StartCoroutine(player.GetComponent<KeyMovement>().FlyOver(locations[1].transform.position, 1f));
         yield return new WaitForSeconds(1f);
 
-        yield return StartCoroutine(player.GetComponent<KeyMovement>().FlyOver(locations[2], 1f));
+        applyForce = true;
+        StartCoroutine(player.GetComponent<KeyMovement>().FlyOver(locations[2].transform.position, 1f));
+        yield return new WaitForSeconds(3f);
+
+        applyForce = false;
 
         LB.SetActive(true);
         LBEntry.SetActive(true);
         MMTitle.SetActive(false);
 
+
+        MMB1.SetActive(false);
+        MMB2.SetActive(true);
 
         float multipliedScore = float.Parse(smallText.text) * 100;
         currentScore.text = Mathf.RoundToInt(multipliedScore).ToString();
