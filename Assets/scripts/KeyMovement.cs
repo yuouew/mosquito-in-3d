@@ -9,7 +9,7 @@ public class KeyMovement : MonoBehaviour
     Rigidbody rig;
 
 
-    float magnitube = 2f;
+    public float magnitube = 0f;
     public GameObject smoke;
     public GameObject stun;
 
@@ -28,10 +28,13 @@ public class KeyMovement : MonoBehaviour
 
     float z = 5f;  //velocity
 
+    private Vector3 savedPosition;
 
     // Start is called before the first frame update
     void Start()
     {
+        savedPosition = transform.position;
+
         rig = GetComponent<Rigidbody>();
 
         smoke.SetActive(false);
@@ -44,6 +47,31 @@ public class KeyMovement : MonoBehaviour
         wingRB.SetActive(false);
     }
 
+    public void Spawn()
+    {
+        transform.position = savedPosition;
+    }
+
+    //public void Bite()
+    //{
+    //    //transform.position = 
+    //}
+
+    public IEnumerator FlyOver(Vector3 targetPosition, float speed)
+    {
+        InvokeRepeating("TriggerLeft", 0f, 0.2f);
+        InvokeRepeating("TriggerRight", 0f, 0.2f);
+
+        while (Vector3.Distance(transform.position, targetPosition) > 1f)
+        {
+            transform.position = Vector3.Lerp(transform.position, targetPosition, speed * Time.deltaTime);
+
+            yield return null;
+        }
+
+        CancelInvoke();
+    }
+
     // Update is called once per frame
     void Update()
     {
@@ -54,6 +82,9 @@ public class KeyMovement : MonoBehaviour
         }
         else
         {
+
+            //KEY MOVEMENT
+
             ////flap left, push right
             //if (Input.GetKeyDown(KeyCode.A))
             //{
@@ -82,12 +113,13 @@ public class KeyMovement : MonoBehaviour
             //    wingRB.SetActive(false);
             //}
 
+            //FLAP MOVEMENT
 
             if (Input.GetKeyDown(KeyCode.A))
             {
                 TriggerLeft();
             }
-            if (Input.GetKeyUp(KeyCode.L))
+            if (Input.GetKeyDown(KeyCode.L))
             {
                 TriggerRight();
             }
@@ -109,7 +141,7 @@ public class KeyMovement : MonoBehaviour
             Vector3 normal = contact.normal;  // The normal of the surface we hit
             rig.velocity = Vector3.Reflect(rig.velocity, normal) * 5f;
 
-            stunned = true;
+            //stunned = true;
 
             StartCoroutine(StunTimer());
         }
@@ -186,17 +218,17 @@ public class KeyMovement : MonoBehaviour
     }
 
     ////WINGS
-    //private void Right()
-    //{
-    //    rig.AddForce(Vector3.forward * magnitube, ForceMode.Impulse);
-    //    rig.AddForce(Vector3.left * magnitube, ForceMode.Impulse);
-    //}
+    private void Right()
+    {
+        rig.AddForce(Vector3.forward * magnitube, ForceMode.Impulse);
+        rig.AddForce(Vector3.left * magnitube, ForceMode.Impulse);
+    }
 
-    //private void Left()
-    //{
-    //    rig.AddForce(Vector3.forward * magnitube, ForceMode.Impulse);
-    //    rig.AddForce(Vector3.right * magnitube, ForceMode.Impulse);
-    //}
+    private void Left()
+    {
+        rig.AddForce(Vector3.forward * magnitube, ForceMode.Impulse);
+        rig.AddForce(Vector3.right * magnitube, ForceMode.Impulse);
+    }
 
 
     public void TriggerLeft()
@@ -217,28 +249,16 @@ public class KeyMovement : MonoBehaviour
         StartCoroutine(ResetRightWing());
     }
 
-    private void Right()
-    {
-        rig.AddForce(Vector3.forward * magnitube, ForceMode.Impulse);
-        rig.AddForce(Vector3.left * magnitube, ForceMode.Impulse);
-    }
-
-    private void Left()
-    {
-        rig.AddForce(Vector3.forward * magnitube, ForceMode.Impulse);
-        rig.AddForce(Vector3.right * magnitube, ForceMode.Impulse);
-    }
-
     IEnumerator ResetLeftWing()
     {
-        yield return new WaitForSeconds(0.2f);
+        yield return new WaitForSeconds(0.1f);
         wingLA.SetActive(true);
         wingLB.SetActive(false);
     }
 
     IEnumerator ResetRightWing()
     {
-        yield return new WaitForSeconds(0.2f);
+        yield return new WaitForSeconds(0.1f);
         wingRA.SetActive(true);
         wingRB.SetActive(false);
     }
